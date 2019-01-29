@@ -1,0 +1,76 @@
+package com.example.shashank.g_layout;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.widget.GridLayout;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        GridLayout gridLayout = (GridLayout) findViewById(R.id.tableGrid);
+
+        gridLayout.removeAllViews();
+
+        int total = 10;
+        int column = 2;
+        int row = total / column;
+        gridLayout.setColumnCount(column);
+        gridLayout.setRowCount(row + 1);
+        for (int i = 0, c = 0, r = 0; i < total; i++, c++) {
+            if (c == column) {
+                c = 0;
+                r++;
+            }
+            TextView textView= new TextView(this) ;
+            textView.setText("hello");
+           // ImageView oImageView = new ImageView(this);
+           // textView.setImageResource(R.drawable.wallet1);
+            GridLayout.LayoutParams param = new GridLayout.LayoutParams();
+            param.height = GridLayout.LayoutParams.WRAP_CONTENT;
+            param.width = GridLayout.LayoutParams.WRAP_CONTENT;
+            textView.setBackgroundColor(Color.parseColor("blue"));
+            textView.setWidth(670);
+            textView.setHeight(200);
+            param.rightMargin =25;
+            param.topMargin = 50;
+            param.leftMargin=25;
+            param.setGravity(Gravity.CENTER);
+            param.columnSpec = GridLayout.spec(c);
+            param.rowSpec = GridLayout.spec(r);
+            textView.setLayoutParams(param);
+            gridLayout.addView(textView);
+        }
+    }
+}
+
+xml///////
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.shashank.g_layout.MainActivity">
+
+
+    <GridLayout
+        android:id="@+id/tableGrid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        app:theme="@style/AlertDialog.AppCompat">
+
+
+    </GridLayout>
+
+
+</RelativeLayout>

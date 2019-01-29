@@ -1,0 +1,220 @@
+package com.example.shashank.myapplication;
+
+import android.app.Dialog;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import br.com.bloder.magic.view.MagicButton;
+
+
+public class MainActivity extends AppCompatActivity {
+    MagicButton magicButton;
+    String[] month  = new String[]{
+            "All","January","February","March","April","May","June","July",
+            "August","September","October","November","December"};
+    String[] year  = new String[]{
+            "All","2016","2017","2018","2019"};
+    ArrayList<String> categoryList = new ArrayList<String>();
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        magicButton = (MagicButton) findViewById(R.id.magic_button);
+
+        // add listener to button
+        magicButton.setMagicButtonClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                // Create custom dialog object
+                final Dialog dialog = new Dialog(MainActivity.this);
+                // Include dialog.xml file
+                dialog.setContentView(R.layout.dialog);
+                // Set dialog title
+                dialog.setTitle("Custom Dialog");
+
+                // set values for custom dialog components - text, and button
+                TextView text = (TextView) dialog.findViewById(R.id.textView);
+                text.setText("Month");
+
+                Spinner spin = (Spinner)dialog.findViewById(R.id.spinner);
+                ArrayAdapter<String> adapter_month = new ArrayAdapter<String>(MainActivity.this,  android.R.layout.simple_spinner_item, month);
+                adapter_month.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spin.setAdapter(adapter_month);
+
+                TextView text1 = (TextView) dialog.findViewById(R.id.textView1);
+                text1.setText("Year");
+                Spinner spin1 = (Spinner)dialog.findViewById(R.id.spinner1);
+                ArrayAdapter<String> adapter_year = new ArrayAdapter<String>(MainActivity.this,  android.R.layout.simple_spinner_item, year);
+                adapter_year.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spin1.setAdapter(adapter_year);
+
+                dialog.show();
+
+                Button declineButton = (Button) dialog.findViewById(R.id.button);
+                // if decline button is clicked, close the custom dialog
+                declineButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Close dialog
+                        dialog.dismiss();
+                    }
+                });
+
+
+            }
+
+        });
+    }
+
+
+
+
+}
+
+
+
+activity main.xml
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/back"
+    tools:context="com.example.shashank.myapplication.MainActivity">
+
+
+
+    <br.com.bloder.magic.view.MagicButton
+        android:id="@+id/magic_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="90dp"
+        android:paddingTop="30dp"
+        app:button_icon="@drawable/your_icon"
+        app:button_icon_height="40dp"
+        app:button_icon_width="4a0dp"
+        app:expandable_area_color="@color/colorAccent"
+        app:hide_text=" CALENDAR"
+        app:hide_text_color="@android:color/black"
+        app:hide_text_size="5dp"
+        app:icon_button_color="@color/colorPrimaryDark"
+        app:magic_button_size="60dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignEnd="@+id/magic_button"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/magic_button"
+        android:layout_marginTop="14dp"
+        android:gravity="center"
+        android:text="Total:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView2"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/textView2"
+        android:layout_toEndOf="@+id/textView2" />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/textView2"
+        android:layout_alignParentStart="true">
+
+    </GridLayout>
+
+</RelativeLayout>
+
+
+
+
+dialog.xml
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="Month"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="54dp" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView"
+        android:layout_alignTop="@+id/textView"
+        android:layout_toEndOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="Year"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="15dp" />
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/textView1"
+        android:layout_alignTop="@+id/textView1" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="go"
+        android:layout_below="@+id/textView1"
+        android:layout_alignParentEnd="true" />
+</RelativeLayout>
+
+
+
+
+gradle(module)=
+
+dependencies{
+compile 'com.github.bloder:magic:1.1'}
+
+gradle(projact)-
+repositories {
+        
+        maven {
+            url "https://jitpack.io"
+        }

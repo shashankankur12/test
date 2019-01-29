@@ -1,0 +1,235 @@
+
+#include<math.h>
+#include<stdlib.h>
+#include <fstream>
+#include <iostream>
+class connection_config;
+using namespace std;
+class cost
+{
+	int node_id;
+	int ncost;
+	public:
+		cost():node_id(0),ncost(0){ }
+		cost(int id,int cost1):node_id(id),ncost(cost1)
+		{ }
+		cost(const cost& c):node_id(c.node_id),ncost(c.ncost)
+		{
+		}
+		int getNode()
+		{
+			return node_id;
+		}
+		int getCost()
+		{
+			return ncost;
+		}
+		bool operator>(const cost& c)
+		{
+			return this->ncost>c.ncost;
+		}
+		void print()
+		{
+			cout<<node_id<<"  "<<ncost<<endl;
+		}
+		void setCost(int cost1)
+		{
+			ncost=cost1;
+		}
+		void setHost(int host_id)
+		{
+			node_id=host_id;
+		}
+};
+class node
+{
+	static int idsr[];
+	static int ids[];
+	static node *nodes[];
+	int *connected;
+	int id;
+	cost *costTable;
+	cost *recCostTable;
+	static int groupSize;
+	public:
+		node(int size)
+		{
+			groupSize=size;
+			setId();
+			nodes[id]=this;
+			costTable=new cost[100];
+			recCostTable=new cost[100];
+		}
+		void setId()
+		{
+			int t=rand();
+			while(idsr[(t=(rand()%(90)+10))!=0])
+			t=rand();
+			idsr[t]=1;
+			id=t;
+			ids[++ids[0]]=id;
+		}
+		int getId()
+		{
+			return id;
+		}
+		static node* getNode(int id)
+		{
+			return nodes[id];
+		}
+		void setConnection(int *connection)
+		{
+			connected=connection;
+		}
+		cost *getTable(int flag)
+		{
+			if(flag==1)
+			return costTable;
+			else 
+			return recCostTable;
+		}
+		void setCost(cost c)
+		{
+			costTable[c.getNode()]=c;
+			
+		}
+		cost maxCost()
+		{
+			cost max(0,0);
+			for(int i=1;i<=groupSize;i++)
+			{
+				int host_id=ids[i];
+				if(costTable[host_id]>max)
+				max=costTable[host_id];
+			}
+			return max;
+		}
+		void sendMaxCost()
+		{
+			cost c=maxCost();
+			c.setHost(this->id);
+			for(int i=1;i<=groupSize;i++)
+			{
+				int host_id=ids[i];
+				nodes[host_id]->recieveMaxCost(c);
+			}
+		}
+		void recieveMaxCost(cost& c)
+		{
+			recCostTable[c.getNode()]=c;
+		}
+		friend class connection_config;
+};
+int node::idsr[100]={0};
+node * node::nodes[100]={NULL};
+int node::groupSize;
+int node::ids[100]={0};
+class connection_config
+{
+	static int temp[];
+	static int count;
+	static int ids[];
+	static int size;
+	static int connection[][100];
+	public:
+		static void inIt()
+		{
+			for(int i=0;i<100;i++)
+			connection[i][0]=0;
+		}
+	static	void config()
+		{
+			int x,y;
+			ifstream reader("data.txt");
+			if(!reader)
+			{
+				cout<<"Problem in opening configration file"<<endl;
+				return;
+			}
+			reader>>size;
+			inIt();
+			while(reader>>x&&reader>>y)
+			{
+				node *n1=NULL;
+				node *n2=NULL;
+				if(ids[x]==0)
+				 n1=new node(size);
+				 else
+				 n1=node::getNode(ids[x]);
+				 if(ids[y]==0)
+				 n2=new node(size);
+				 else
+				 n2=node::getNode(ids[y]);
+				ids[x]=n1->getId();
+				ids[y]=n2->getId();
+				connection[n1->getId()][++connection[n1->getId()][0]]=n2->getId();
+				n1->setConnection(connection[n1->getId()]);	
+				temp[x]=ids[x];
+			}
+		}
+		static void setCost()
+		{
+			int x,y,z;
+			ifstream reader("cost.txt");
+			if(!reader)
+			{
+				cout<<"Problem in opening cost file"<<endl;
+				return;
+			}
+			while(reader>>x&&reader>>y&&reader>>z)
+			{
+				node& n=*(node::getNode(ids[x]));
+				cost *c=new cost(ids[y],z);
+				n.setCost(*c);
+			}	
+		}
+		static void displayCost(int flag)
+		{
+			for(int i=1;i<=size;i++)
+			{
+				node *n=node::getNode(temp[i]);
+				cost *con=n->getTable(flag);
+				cout<<"Host  Id in Network:"<<n->getId()<<endl;
+				cout<<"-----------------"<<endl;
+				cout<<"Id | cost "<<endl;
+				cout<<"----------"<<endl;
+				for(int j=1;j<=size;j++)
+				con[temp[j]].print();
+				cout<<"----------"<<endl;
+				
+			}
+		}
+		static int getSize()
+		{
+			return size;
+		}
+		static int* getId_rec(int node_number)
+		{
+			return ids;
+		}
+			static void shareCost()
+		{
+			for(int i=1;i<=size;i++)
+			{
+				node *n=node::getNode(temp[i]);
+				n->sendMaxCost();
+			}
+		}
+};
+int connection_config::ids[100]={0};
+int connection_config::connection[100][100];
+int connection_config::count=0;
+int connection_config::temp[100]={0};
+int connection_config::size=0;
+int main()
+{
+	connection_config::config();
+	connection_config::setCost();
+	connection_config::displayCost(1);
+	cout<<"----------------------------------------------------------------------------------------------------------------------"<<endl;
+	cout<<"After sharing Costs :"<<endl;
+	cout<<"----------------------------------------------------------------------------------------------------------------------"<<endl;
+	connection_config::shareCost();
+	connection_config::displayCost(0);
+	return 0;
+}
